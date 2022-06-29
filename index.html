@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Tory Model</title>
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100% }
+      </style>
+  </head>
+  <body>
+      <script src="build/three.js"></script>
+      <script src="build/MTLLoader.js"></script>
+      <script src="build/OBJLoader.js"></script>
+      <script src="build/OrbitControls.js"></script>
+    </script>
+      <script>
+
+        function init(){
+          //import * as THREE from 'three';
+          //import { OrbitControls } from "build/OrbitControls.js";
+          //import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+
+
+          var scene = new THREE.Scene(); 
+          scene.background = new THREE.Color(0xdddddd);
+          var camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight, 0.1, 10000 );
+
+
+          //var geometry = new THREE.BoxGeometry(1,1,1);
+          //var material = new THREE.MeshBasicMaterial( {color: 0x00ff00 } );
+
+          camera.position.set(100, 100, 300);
+
+
+          var renderer = new THREE.WebGLRenderer( {antialias:true} );
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          document.body.appendChild( renderer.domElement );
+          
+
+          ///////////////////////////////////////////////////////////////////////////////////
+
+
+          var controls = new OrbitControls(camera,renderer.domElement);
+          controls.listenToKeyEvents( window ); // optional
+          //controls.addEventListener('change',renderer);
+          
+          controls.enableDamping = true;
+          controls.dampingFactor = 0.05;
+          controls.screenSpacePanning = false;
+          controls.minDistance = 100;
+          controls.maxDistance = 500;
+          controls.maxPolarAngle = Math.PI / 2;
+          /*controls.enableZoom = true;*/
+          
+          ///////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+          const ambientLight = new THREE.AmbientLight( 0xcccccc, 1 );
+          scene.add( ambientLight );
+
+          const pointLight = new THREE.PointLight( 0xffffff, 0.8 );
+          camera.add( pointLight );
+
+          const directionalLight = new THREE.DirectionalLight(0xffffff,10);
+          directionalLight.position.set(-700,1000,-300);
+          directionalLight.castShadow = true;
+          scene.add(directionalLight);
+
+
+
+          var mtlLoader = new THREE.MTLLoader();
+          /*mtlLoader.setTexturePath('//');*/
+          mtlLoader.setPath('mod/');
+          mtlLoader.load('Model.mtl', function(materials){
+            materials.preload();
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.setPath('mod/');
+            objLoader.load('Model.obj', function(object) {
+            object.scale.x = 0.1;
+            object.scale.y = 0.1;
+            object.scale.z = 0.1;
+            object.position.set(0,0,0);
+            scene.add(object);
+            animate();
+          });
+          });
+
+          function animate(){
+  
+            requestAnimationFrame( animate );
+            //controls.update();
+            renderer.render(scene,camera);
+          }
+
+          animate();
+        };
+        init();
+      </script>
+
+  </body>
+</html>
